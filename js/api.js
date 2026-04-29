@@ -1,4 +1,4 @@
-const API_URL = 'https://your-backend-url.hostless.app'
+const API_URL = 'https://insightabackend.hostless.app'
 
 const api = {
     async request(endpoint, options = {}) {
