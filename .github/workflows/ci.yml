@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check HTML files exist
+        run: |
+          test -f index.html && echo "✓ index.html" || exit 1
+          test -f dashboard.html && echo "✓ dashboard.html" || exit 1
+          test -f profiles.html && echo "✓ profiles.html" || exit 1
+          test -f profile.html && echo "✓ profile.html" || exit 1
+          test -f search.html && echo "✓ search.html" || exit 1
+          test -f account.html && echo "✓ account.html" || exit 1
