@@ -1,5 +1,3 @@
-const API_URL = 'https://insightabackend.hostless.app'
-
 const api = {
     async request(endpoint, options = {}) {
         const response = await fetch(`${API_URL}${endpoint}`, {
