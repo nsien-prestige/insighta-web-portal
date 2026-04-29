@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profiles — Insighta Labs</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">⚡ Insighta</div>
+            <nav>
+                <a href="dashboard.html">📊 Dashboard</a>
+                <a href="profiles.html" class="active">👥 Profiles</a>
+                <a href="search.html">🔍 Search</a>
+                <a href="account.html">👤 Account</a>
+            </nav>
+            <div class="user-info">
+                <div class="username" id="sidebar-username">Loading...</div>
+                <div class="role" id="sidebar-role"></div>
+                <button class="btn-logout" onclick="handleLogout()">Sign out</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="page-header">
+                <h1>Profiles</h1>
+                <p>Browse and filter all profiles</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <select id="filter-gender">
+                    <option value="">All Genders</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+                <select id="filter-age-group">
+                    <option value="">All Age Groups</option>
+                    <option value="child">Child</option>
+                    <option value="teenager">Teenager</option>
+                    <option value="adult">Adult</option>
+                    <option value="senior">Senior</option>
+                </select>
+                <input type="text" id="filter-country" placeholder="Country code (e.g NG)">
+                <input type="number" id="filter-min-age" placeholder="Min age">
+                <input type="number" id="filter-max-age" placeholder="Max age">
+                <select id="filter-sort">
+                    <option value="created_at">Sort by Date</option>
+                    <option value="age">Sort by Age</option>
+                    <option value="gender_probability">Sort by Gender Probability</option>
+                </select>
+                <select id="filter-order">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadProfiles(1)">Apply</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+                <button class="btn btn-primary" id="export-btn" onclick="exportCSV()">Export CSV</button>
+                <button class="btn btn-primary" id="create-btn" onclick="showCreateModal()" style="display:none">+ Create</button>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div id="profiles-container">
+                    <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
+                </div>
+                <div class="pagination" id="pagination" style="display:none">
+                    <span id="pagination-info"></span>
+                    <div class="pagination-buttons">
+                        <button id="prev-btn" onclick="changePage(-1)" disabled>← Prev</button>
+                        <button id="next-btn" onclick="changePage(1)">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Modal -->
+            <div id="create-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
+                <div class="card" style="width:400px;">

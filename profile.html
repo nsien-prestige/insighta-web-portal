@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — Insighta Labs</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">⚡ Insighta</div>
+            <nav>
+                <a href="dashboard.html">📊 Dashboard</a>
+                <a href="profiles.html" class="active">👥 Profiles</a>
+                <a href="search.html">🔍 Search</a>
+                <a href="account.html">👤 Account</a>
+            </nav>
+            <div class="user-info">
+                <div class="username" id="sidebar-username">Loading...</div>
+                <div class="role" id="sidebar-role"></div>
+                <button class="btn-logout" onclick="handleLogout()">Sign out</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="page-header">
+                <a href="profiles.html" style="color: var(--text-light); text-decoration:none; font-size:14px;">
+                    ← Back to Profiles
+                </a>
+                <h1 style="margin-top:8px;" id="profile-name">Loading...</h1>
+            </div>
+
+            <div id="profile-container">
+                <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const API_URL = 'https://your-backend-url.hostless.app'
+
+        const init = async () => {
+            const user = await checkAuth()
+            if (!user) return
+
+            document.getElementById('sidebar-username').textContent = '@' + user.username
+            document.getElementById('sidebar-role').textContent = user.role
+
+            const params = new URLSearchParams(window.location.search)
+            const id = params.get('id')
+
+            if (!id) {
+                window.location.href = '/profiles.html'
+                return
+            }
+
+            loadProfile(id)
+        }
+
+        const loadProfile = async (id) => {
+            try {
+                const response = await api.get(`/api/profiles/${id}`)
+                const data = await response.json()
+                const p = data.data
+
+                document.getElementById('profile-name').textContent = p.name
+
+                document.getElementById('profile-container').innerHTML = `
+                    <div class="card">
+                        <div class="profile-detail-grid">
+                            <div class="detail-item">
+                                <div class="label">Name</div>
+                                <div class="value">${p.name}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Gender</div>
+                                <div class="value">
+                                    <span class="badge badge-${p.gender}">${p.gender}</span>
+                                    <span style="font-size:13px; color:var(--text-light); margin-left:8px;">
+                                        ${(p.gender_probability * 100).toFixed(1)}% confidence
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Age</div>
+                                <div class="value">${p.age} years old</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Age Group</div>
+                                <div class="value">${p.age_group}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Country</div>
+                                <div class="value">${p.country_name} (${p.country_id})</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Country Confidence</div>
+                                <div class="value">${(p.country_probability * 100).toFixed(1)}%</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Profile ID</div>
+                                <div class="value" style="font-size:13px; color:var(--text-light)">${p.id}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Created At</div>
+                                <div class="value">${formatDate(p.created_at)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            } catch (err) {
+                document.getElementById('profile-container').innerHTML =
+                    '<div class="error-message">Failed to load profile</div>'
+            }
+        }
+
+        const handleLogout = async () => await logout()
+
+        init()
+    </script>
+</body>
+</html>

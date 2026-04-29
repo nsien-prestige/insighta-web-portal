@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search — Insighta Labs</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">⚡ Insighta</div>
+            <nav>
+                <a href="dashboard.html">📊 Dashboard</a>
+                <a href="profiles.html">👥 Profiles</a>
+                <a href="search.html" class="active">🔍 Search</a>
+                <a href="account.html">👤 Account</a>
+            </nav>
+            <div class="user-info">
+                <div class="username" id="sidebar-username">Loading...</div>
+                <div class="role" id="sidebar-role"></div>
+                <button class="btn-logout" onclick="handleLogout()">Sign out</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="page-header">
+                <h1>Natural Language Search</h1>
+                <p>Search profiles using plain English</p>
+            </div>
+
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder='Try "young males from nigeria" or "adults above 30"'
+                    onkeydown="if(event.key === 'Enter') search()"
+                >
+                <button class="btn btn-primary" onclick="search()">Search</button>
+            </div>
+
+            <div style="margin-bottom: 16px; font-size: 13px; color: var(--text-light)">
+                <strong>Example queries:</strong>
+                young males from nigeria &nbsp;·&nbsp;
+                females above 30 &nbsp;·&nbsp;
+                adults from kenya &nbsp;·&nbsp;
+                seniors from egypt
+            </div>
+
+            <div id="search-results"></div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const API_URL = 'https://your-backend-url.hostless.app'
+
+        const init = async () => {
+            const user = await checkAuth()
+            if (!user) return
+
+            document.getElementById('sidebar-username').textContent = '@' + user.username
+            document.getElementById('sidebar-role').textContent = user.role
+        }
+
+        const search = async () => {
+            const query = document.getElementById('search-input').value.trim()
+            if (!query) return
+
+            const container = document.getElementById('search-results')
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>'
+
+            try {
+                const response = await api.get(`/api/profiles/search?q=${encodeURIComponent(query)}`)
+                const data = await response.json()
+
+                if (!data.data || data.data.length === 0) {
+                    container.innerHTML = '<div class="error-message">No profiles matched your search</div>'
+                    return
+                }
+
+                container.innerHTML = `
+                    <p style="margin-bottom:16px; color:var(--text-light); font-size:14px;">
+                        Found ${data.total} profiles
+                    </p>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Age</th>
+                                    <th>Age Group</th>
+                                    <th>Country</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(p => `
+                                    <tr>
+                                        <td><a href="profile.html?id=${p.id}">${p.name}</a></td>
+                                        <td><span class="badge badge-${p.gender}">${p.gender}</span></td>
+                                        <td>${p.age}</td>
+                                        <td>${p.age_group}</td>
+                                        <td>${p.country_id}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `
+            } catch (err) {
+                container.innerHTML = '<div class="error-message">Search failed. Please try again.</div>'
+            }
+        }
+
+        const handleLogout = async () => await logout()
+
+        init()
+    </script>
+</body>
+</html>
