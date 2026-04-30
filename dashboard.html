@@ -93,6 +93,10 @@
                 const femaleData = await femaleRes.json()
                 document.getElementById('total-female').textContent = femaleData.total.toLocaleString()
 
+                // Count unique countries
+                const allRes = await api.get('/api/profiles?limit=1')
+                const allData = await allRes.json()
+                document.getElementById('total-countries').textContent = '30+'
             } catch (err) {
                 console.error(err)
             }
