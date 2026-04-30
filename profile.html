@@ -58,16 +58,26 @@
                 return
             }
 
-            loadProfile(id)
+            loadProfile(id, user.role === 'admin')
         }
 
-        const loadProfile = async (id) => {
+        const loadProfile = async (id, isAdmin) => {
             try {
                 const response = await api.get(`/api/profiles/${id}`)
                 const data = await response.json()
                 const p = data.data
 
                 document.getElementById('profile-name').textContent = p.name
+
+                const deleteBtn = isAdmin ? `
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border, #e5e7eb);">
+                        <button
+                            onclick="deleteProfile('${p.id}')"
+                            style="background: #dc2626; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                            Delete Profile
+                        </button>
+                    </div>
+                ` : ''
 
                 document.getElementById('profile-container').innerHTML = `
                     <div class="card">
@@ -110,11 +120,28 @@
                                 <div class="value">${formatDate(p.created_at)}</div>
                             </div>
                         </div>
+                        ${deleteBtn}
                     </div>
                 `
             } catch (err) {
                 document.getElementById('profile-container').innerHTML =
                     '<div class="error-message">Failed to load profile</div>'
+            }
+        }
+
+        const deleteProfile = async (id) => {
+            if (!confirm('Are you sure you want to delete this profile? This cannot be undone.')) return
+
+            try {
+                const response = await api.delete(`/api/profiles/${id}`)
+                if (response && response.ok) {
+                    window.location.href = 'profiles.html'
+                } else {
+                    const data = await response.json().catch(() => ({}))
+                    alert(data.message || 'Failed to delete profile')
+                }
+            } catch (err) {
+                alert('Failed to delete profile')
             }
         }
 
