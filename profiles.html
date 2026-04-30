@@ -191,7 +191,19 @@
         const exportCSV = async () => {
             const filters = getFilters()
             const params = buildQueryString(filters)
-            window.open(`${API_URL}/api/profiles/export?${params}&format=csv`, '_blank')
+            
+            try {
+                const response = await api.get(`/api/profiles/export?${params}&format=csv`)
+                const blob = await response.blob()
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `profiles_${Date.now()}.csv`
+                a.click()
+                window.URL.revokeObjectURL(url)
+            } catch (err) {
+                alert('Export failed')
+            }
         }
 
         const showCreateModal = () => {
