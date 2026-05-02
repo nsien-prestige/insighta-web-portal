@@ -1,72 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insighta Labs — Login</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <div class="logo">Insighta Labs</div>
-            <p class="tagline">Profile Intelligence Platform</p>
-
-            <a id="github-login-btn" class="btn-github" href="#">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                Continue with GitHub
-            </a>
-
-            <p style="margin-top: 24px; font-size: 13px; color: #94a3b8;">
-                By continuing, you agree to our terms of service
-            </p>
-        </div>
-    </div>
-
-    <script src="js/api.js"></script>
-    <script>
-        const API_URL = 'https://insightabackend.hostless.app'
-
-        // Check if already logged in
-        const checkExistingSession = async () => {
-            try {
-                const response = await fetch(`${API_URL}/auth/me`, {
-                    credentials: 'include',
-                    headers: { 'X-API-Version': '1' }
-                })
-                if (response.ok) {
-                    window.location.href = '/dashboard.html'
-                }
-            } catch {
-                // Not logged in, stay on login page
-            }
-        }
-
-        // Generate random string for PKCE
-        const generateRandomString = () => {
-            const array = new Uint8Array(32)
-            crypto.getRandomValues(array)
-            return btoa(String.fromCharCode(...array))
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=/g, '')
-        }
-
-        const setupLoginButton = async () => {
-            const state = generateRandomString()
-
-            // Store verifier in sessionStorage to use after callback
-            sessionStorage.setItem('pkce_state', state)
-
-            const params = new URLSearchParams({ state })
-            document.getElementById('github-login-btn').href = 
-                `${API_URL}/auth/github?${params}`
-        }
-
-        checkExistingSession()
-        setupLoginButton()
-    </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Prestige Nsien — Backend Engineer. Node.js, NestJS, PostgreSQL, REST APIs, JWT Auth." />
+    <meta property="og:title" content="Prestige Nsien | Backend Engineer" />
+    <meta property="og:description" content="Building robust, scalable backend systems with Node.js, NestJS, and PostgreSQL." />
+    <title>Prestige Nsien | Backend Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
